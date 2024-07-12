@@ -8,6 +8,7 @@ import styles from './Register.module.css';
 const Register = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [email, setEmail] = useState('');
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
   const router = useRouter();
@@ -15,9 +16,10 @@ const Register = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/api/auth/register/', {
+      const response = await axios.post('http://localhost:8000/user/signup/', {
         username,
         password,
+        email,
       });
       setSuccess('User registered successfully!');
       setError('');
@@ -42,6 +44,16 @@ const Register = () => {
               className={styles.inputField}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className={styles.label}>Email</label>
+            <input
+              type="text"
+              className={styles.inputField}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
