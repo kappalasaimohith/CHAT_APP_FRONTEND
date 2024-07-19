@@ -4,12 +4,17 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import styles from './Login.module.css';
+import { FaEyeSlash, FaEye } from 'react-icons/fa';
 
 const Login = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [showPassword,setShowPassword] = useState(false);
   const router = useRouter();
+  const togglePasswordVisibility = () =>{
+    setShowPassword(!showPassword);
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,26 +37,25 @@ const Login = () => {
       <div className={styles.formWrapper}>
         <h1 className={styles.title}>Login</h1>
         <form onSubmit={handleSubmit}>
-          <div>
-            <label className={styles.label}>Username</label>
             <input
               type="text"
               className={styles.inputField}
               value={username}
+              placeholder='Username'
               onChange={(e) => setUsername(e.target.value)}
               required
             />
-          </div>
-          <div>
-            <label className={styles.label}>Password</label>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               className={styles.inputField}
               value={password}
+              placeholder='Password'
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-          </div>
+            <button type='button' onClick={togglePasswordVisibility} style={{zIndex:-1,transform: 'translateX(-200%)',}}>
+              {!showPassword ? <FaEye />:<FaEyeSlash />}
+            </button>
           <button type="submit" className={styles.submitButton}>Login</button>
           {error && <p className={styles.error}>{error}</p>}
         </form>
