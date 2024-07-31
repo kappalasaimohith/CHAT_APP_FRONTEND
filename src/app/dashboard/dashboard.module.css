@@ -1,0 +1,97 @@
+.container {
+    padding: 20px;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .input {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+  }
+  
+  .button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #0070f3;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .button:hover {
+    background-color: #005bb5;
+  }
+  
+  .title {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .listItem {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+
+  .styleContainer {
+    display: flex;
+    height: 100vh;
+
+}
+
+.sidebar {
+    /* align-items: flex-start;
+    display: flex; */
+    width: 250px;
+    background-color: #ededed;
+    border-right: 1px solid #ccc;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+.headerText {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.roomList {
+    display: flex;
+    flex-direction: column;
+}
+
+.roomButto {
+    margin-bottom: 10px;
+    text-align: left;
+    border-radius: 0;
+    border: none;
+    background-color: transparent;
+    padding: 10px 20px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mainContent {
+    flex: 1;
+    background-color: #ffffff;
+    padding: 20px;
+    box-sizing: border-box;
+}

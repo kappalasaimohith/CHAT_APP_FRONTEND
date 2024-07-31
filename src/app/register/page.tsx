@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { AuthContext } from '../context';
 import styles from './Register.module.css';
 
 const Register = () => {
@@ -12,7 +13,12 @@ const Register = () => {
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
   const router = useRouter();
+  const authContext = useContext(AuthContext);
+  if(!authContext){
+    throw new Error('AuthContext must be used within an AuthTokenProvider');
+  }
 
+  const {login} = authContext;
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -21,11 +27,18 @@ const Register = () => {
         password,
         email,
       });
+      const data = response.data;
+      if (data.token) {
+        login(data.token);
+        setError('');
+        console.log(data.token, " is the token")
+        router.push('/dashboard');
+      }
       setSuccess('User registered successfully!');
       setError('');
       setUsername('');
       setPassword('');
-      router.push('/login');
+      router.push('/dashboard');
     } catch (error) {
       setError('Registration failed. Try again.');
       setSuccess('');
