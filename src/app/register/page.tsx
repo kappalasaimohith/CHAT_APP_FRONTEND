@@ -46,43 +46,57 @@ const Register = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.formWrapper}>
-        <h1 className={styles.title}>Register</h1>
+    <div className="min-h-screen flex justify-center items-center bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h1 className="text-2xl font-bold text-center mb-4">Register</h1>
         <form onSubmit={handleSubmit}>
-          <div>
-            <label className={styles.label}>Username</label>
+          <div className="mb-4">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              Username
+            </label>
             <input
+              id="username"
               type="text"
-              className={styles.inputField}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-3 py-2 border rounded-md focus:border-blue-500 outline-none"
               required
             />
           </div>
-          <div>
-            <label className={styles.label}>Email</label>
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
             <input
-              type="text"
-              className={styles.inputField}
+              id="email"
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 border rounded-md focus:border-blue-500 outline-none"
               required
             />
           </div>
-          <div>
-            <label className={styles.label}>Password</label>
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
             <input
+              id="password"
               type="password"
-              className={styles.inputField}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border rounded-md focus:border-blue-500 outline-none"
               required
             />
           </div>
-          <button type="submit" className={styles.submitButton}>Register</button>
-          {error && <p className={styles.error}>{error}</p>}
-          {success && <p className={styles.success}>{success}</p>}
+          <button
+            type="submit"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
+          >
+            Register
+          </button>
+          {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+          {success && <p className="text-green-500 text-center mt-2">{success}</p>}
         </form>
       </div>
     </div>
