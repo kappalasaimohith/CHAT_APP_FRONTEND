@@ -8,8 +8,8 @@ import { Button, Divider } from "antd";
 import { FaPlus } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
-export default function Home() {
-  const router = useRouter();
+const Sidebar2 = () => {
+    const router = useRouter();
   const [rooms, setrooms] = useState<any[]>([]);
   const [rooms2, setrooms2] = useState<any[]>([]);
   const [roomName, setRoomName] = useState<string>('');
@@ -78,24 +78,9 @@ export default function Home() {
       addRoom(e);
     }
   };
-
   return (
-    <div className={styles.container}>
-
-      {/* <Button><a href="dashboard/YourGroups">Check your groups</a></Button>
-      <hr />
-      <hr />
-      <Button><a href="dashboard/MyRequest">See My Requests</a></Button>
-      <hr />
-      <hr />
-      <Button><a href="dashboard/NewRooms">Join New rooms</a></Button>
-      <hr />
-      <hr />
-      <Button><a href="dashboard/OthersRequests">Other Requests to your group</a></Button>
-      <hr />
-      <hr />
-      <Button><a href="dashboard/AllRooms">Check your all rooms</a></Button> */}
-      {/* <div className="w-full min-h-screen mt-0 bg-white p-4 shadow-md flex flex-col overflow-y-auto" >
+    <div>
+      <div className="w-full min-h-screen mt-0 bg-white p-4 shadow-md flex flex-col overflow-y-auto" >
         <h2 className="text-lg font-bold text-[#004d40] mb-6">Rooms</h2>
         <ul className="space-y-2">
           {rooms?.map((room) => (
@@ -105,7 +90,7 @@ export default function Home() {
                 }`}
               onClick={() => {
                 console.log(room, " is the room id of the app")
-                router.push(`/dashboard/chat/${room.id}`)
+                router.push(`/dashboard/${room.id}`)
               }}
             >
               {room.room}
@@ -120,7 +105,7 @@ export default function Home() {
                 }`}
               onClick={() => {
                 console.log(room, " is the room id of the app")
-                router.push(`/dashboard/chat/${room.room}`)
+                router.push(`/dashboard/${room.room}`)
               }}
             >
               {room.room}
@@ -161,8 +146,9 @@ export default function Home() {
             Create Room
           </button>
         )}
-      </div> */}
-
+      </div>
     </div>
-  );
+  )
 }
+
+export default Sidebar2

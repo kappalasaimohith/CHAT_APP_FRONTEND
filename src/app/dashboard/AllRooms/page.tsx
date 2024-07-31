@@ -59,9 +59,9 @@ const pages = () => {
       }
     })
       .then(response => {
-        console.log(response.rooms);
+        console.log(response.data);
         setRoomName(''); // Clear the input field after successful room addition
-        setrooms(prevrooms => [...prevrooms, response.rooms]); // Update the list with the new room
+        setrooms(prevrooms => [...prevrooms, response.data]); // Update the list with the new room
       })
       .catch(error => {
         console.error(error);
@@ -88,7 +88,7 @@ const pages = () => {
             {/* {room.room_name} */}
             <Button onClick={() => { 
                 console.log(room, " is the room id of the app")
-                router.push(`/chat/${room.id}`) }} className={styles.roomButton}>{room.room}</Button>
+                router.push(`/dashboard/chat/${room.id}`) }} className={styles.roomButton}>{room.room}</Button>
           </li>
         ))}
       </ul>
@@ -98,7 +98,7 @@ const pages = () => {
             {/* {room.room_name} */}
             <Button onClick={() => { 
                 console.log(room, " is the room id of the app")
-                router.push(`/chat/${room.room}`) }} className={styles.roomButton}>{room.room}</Button>
+                router.push(`/dashboard/chat/${room.room}`) }} className={styles.roomButton}>{room.room}</Button>
           </li>
         ))}
       </ul>
