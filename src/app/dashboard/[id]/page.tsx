@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { AuthContext } from '@/app/context';
@@ -15,14 +15,14 @@ interface Message {
 
 const ChatRoom = () => {
   const { id } = useParams();
-  const [roomName, setRoomName] = useState<String>('');
+  const [roomName, setRoomName] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState('');
   const [currentUser, setCurrentUser] = useState('');
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [filePreview, setFilePreview] = useState('');
-  const messagesEndRef = useRef(null);
+  const [filePreview, setFilePreview] = useState<string>('');
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const authContext = useContext(AuthContext);
   const socketRef = useRef<WebSocket | null>(null);
   const router = useRouter();
@@ -34,9 +34,6 @@ const ChatRoom = () => {
   const { authToken } = authContext;
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, id]);
-  useEffect(() => {
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const socket = new WebSocket(`${protocol}://127.0.0.1:8000/ws/${id}/?token=${authToken}`);
     socketRef.current = socket;
@@ -46,21 +43,18 @@ const ChatRoom = () => {
     };
 
     socket.onmessage = (e) => {
-      console.log('Received WebSocket message:', e.data);
       const data = JSON.parse(e.data);
 
       if (data.type === 'initial_messages') {
-        console.log('Initial messages:', data.messages);
         setMessages(data.messages);
         setCurrentUser(data.user);
         setRoomName(data.room_name);
       } else if (data.type === 'chat_message') {
-        console.log('New chat message:', data.message);
-        setMessages(prevMessages => [
+        setMessages((prevMessages) => [
           ...prevMessages,
           {
             id: data.message.id,
-            username: data.username,
+            username: data.message.username,
             message: data.message.message,
             sent_by: data.message.sent_by,
             created_at: data.message.created_at,
@@ -78,17 +72,24 @@ const ChatRoom = () => {
     };
   }, [id, authToken]);
 
+  useEffect(() => {
+    // Scroll to the bottom of the messages container whenever messages change
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
   const handleDropdownToggle = () => {
     setDropdownOpen((prev) => !prev);
   };
 
-  const handleFileInputChange = (event: any) => {
-    const file = event.target.files[0];
+  const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      const reader: any = new FileReader();
+      const reader = new FileReader();
       reader.onloadend = () => {
-        setFilePreview(reader.result);
+        setFilePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -96,7 +97,7 @@ const ChatRoom = () => {
 
   const sendMessage = () => {
     if (messageInput.trim()) {
-      const socket = socketRef.current; // Access the WebSocket instance from the ref
+      const socket = socketRef.current;
       if (socket) {
         const socketMessage = {
           message: messageInput,
@@ -113,7 +114,6 @@ const ChatRoom = () => {
     if (!selectedFile) return null;
 
     const fileType = selectedFile.type?.split('/')[0];
-    const fileExtension = selectedFile.name.split('.').pop();
 
     if (fileType === 'image') {
       return (
@@ -122,68 +122,69 @@ const ChatRoom = () => {
         </div>
       );
     }
-  }
-    return (
-      <div className="flex-1 bg-white flex flex-col border-l border-[#b2dfdb]">
-        <div className="flex items-center p-4 bg-[#004d40] text-white relative shadow-md">
-          <h2 className="text-2xl ml-4 font-bold">
-            {roomName}
-            {/* {rooms.find((room) => room.id === selectedRoomId)?.name} */}
-          </h2>
+    return null;
+  };
 
-          <button
-            className="ml-auto flex items-center p-2 hover:bg-[#00796b] rounded-full transition-colors duration-300"
-            onClick={handleDropdownToggle}
-          >
-            <div className="bg-[#176f15] text-white p-2 rounded-full">
-              <FaEllipsisV className="text-xl" />
-            </div>
-          </button>
-          <div className={`absolute right-4 top-16 bg-white shadow-lg rounded-lg w-48 ${dropdownOpen ? 'block' : 'hidden'}`}>
-            <button
-              className="block w-full text-left px-4 py-2 text-[#004d40] rounded-md hover:bg-[#e0f2f1]"
-              onClick={() => console.log('Viewing profile...')}
-            >
-              View Profile
-            </button>
-            <button
-              className="block w-full text-left px-4 py-2 text-[#e57373] rounded-md hover:bg-[#fce4ec]"
-              onClick={
-                () => {
-                  router.push(`/dashboard`)
-                }
-              }
-            >
-              Exit Group
-            </button>
-            <button
-              className="block w-full text-left px-4 py-2 text-[#00796b] rounded-md hover:bg-[#e0f2f1]"
-              onClick={() => setDropdownOpen(false)}
-            >
-              Close
-            </button>
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
+  return (
+    <div className="w-full flex flex-col h-screen border-l border-[#b2dfdb]">
+      <div className="flex items-center p-4 bg-[#004d40] text-white relative shadow-md">
+        <h2 className="text-2xl ml-4 font-bold">{roomName}</h2>
+
+        <button
+          className="ml-auto flex items-center p-2 hover:bg-[#00796b] rounded-full transition-colors duration-300"
+          onClick={handleDropdownToggle}
+        >
+          <div className="bg-[#176f15] text-white p-2 rounded-full">
+            <FaEllipsisV className="text-xl" />
           </div>
+        </button>
+        <div className={`absolute right-4 top-16 bg-white shadow-lg rounded-lg w-48 ${dropdownOpen ? 'block' : 'hidden'}`}>
+          <button
+            className="block w-full text-left px-4 py-2 text-[#004d40] rounded-md hover:bg-[#e0f2f1]"
+            onClick={() => console.log('Viewing profile...')}
+          >
+            View Profile
+          </button>
+          <button
+            className="block w-full text-left px-4 py-2 text-[#e57373] rounded-md hover:bg-[#fce4ec]"
+            onClick={() => router.push(`/dashboard`)}
+          >
+            Exit Group
+          </button>
+          <button
+            className="block w-full text-left px-4 py-2 text-[#00796b] rounded-md hover:bg-[#e0f2f1]"
+            onClick={() => setDropdownOpen(false)}
+          >
+            Close
+          </button>
         </div>
-        <div className="flex-1 p-4 overflow-y-auto">
-          {messages.map((msg) => (
+      </div>
+      <div className="flex-1 p-4 overflow-y-auto">
+        {messages.map((msg) => (
+          <div
+            key={msg.id}
+            className={`flex mb-4 animate_animated animate_fadeIn ${msg.username === currentUser ? 'justify-end' : 'justify-start'}`}
+          >
             <div
-              key={msg.id}
-              className={`flex mb-4 animate_animated animate_fadeIn ${msg.username === currentUser ? 'justify-end' : 'justify-start'
-                }`}
+              className={`p-1.5 rounded-lg max-w-md break-words ${msg.username === currentUser ? 'bg-[#004d40] text-white' : 'bg-white text-[#004d40]'} shadow-lg border border-[#b2dfbdb]`}
             >
-              <div
-                className={`p-1.5 rounded-lg max-w-md break-words ${msg.username === currentUser ? 'bg-[#004d40] text-white' : 'bg-white text-[#004d40]'
-                  } shadow-lg border border-[#b2dfdb]`}
-              >
-                <span className="text-xs block font-semibold">{msg.username}</span>
-                <p className="leading-relaxed">{msg.message}</p>
-                <span className={`text-[8px] flex justify-end ${msg.username === currentUser ? 'text-white' : 'text-[#004d40]'}`}>{msg.created_at}</span>
-              </div>
+              <span className="text-xs block font-semibold">{msg.username}</span>
+              <p className="leading-relaxed">{msg.message}</p>
+              <span className={`text-[8px] flex justify-end ${msg.username === currentUser ? 'text-white' : 'text-[#004d40]'}`}>{formatTime(msg.created_at)}</span>
             </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
-        <div className="flex items-center p-4 bg-[#e0f2f1] border-t border-[#b2dfdb] rounded-b-lg">
+          </div>
+        ))}
+        <div ref={messagesEndRef} />
+      </div>
+      <div className="p-4 bg-[#e0f2f1] border-t border-[#b2dfbdb] rounded-b-lg flex-shrink-0">
+        <div className="w-full flex items-center">
           {filePreview && (
             <div className="mr-4 flex items-center">
               {renderFilePreview()}
@@ -205,7 +206,7 @@ const ChatRoom = () => {
             <input
               type="file"
               className="hidden"
-              onChange={(e) => { handleFileInputChange(e) }}
+              onChange={handleFileInputChange}
             />
             <span>Attach</span>
           </label>
@@ -217,8 +218,8 @@ const ChatRoom = () => {
           </button>
         </div>
       </div>
-
-    );
-  };
+    </div>
+  );
+};
 
 export default ChatRoom;
