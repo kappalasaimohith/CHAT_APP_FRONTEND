@@ -5,7 +5,7 @@ import styles from '../dashboard.module.css'
 import { AuthContext } from '@/app/context';
 import axios from 'axios';
 
-const pages = () => {
+const MyRequestPage = () => {
     const [myRequests, setMyRequests] = useState<any>([]);
     const authContext = useContext(AuthContext);
 
@@ -66,4 +66,4 @@ const pages = () => {
   )
 }
 
-export default pages
+export default MyRequestPage

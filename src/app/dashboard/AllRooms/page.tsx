@@ -7,7 +7,7 @@ import axios from 'axios';
 import { Button } from 'antd';
 import { useRouter } from "next/navigation";
 
-const pages = () => {
+const AllRoomsPage = () => {
     const [rooms, setrooms] = useState<any[]>([]);
     const [rooms2, setrooms2]  = useState<any[]>([]);
     const [roomName, setRoomName] = useState<string>('');
@@ -106,4 +106,4 @@ const pages = () => {
   )
 }
 
-export default pages
+export default AllRoomsPage

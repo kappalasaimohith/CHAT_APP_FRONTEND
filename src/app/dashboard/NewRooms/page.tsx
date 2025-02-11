@@ -6,7 +6,7 @@ import { AuthContext } from '@/app/context';
 import { Button } from 'antd';
 import axios from 'axios';
 
-const pages = () => {
+const NewRoomsPage = () => {
     const [newRooms, setNewRooms] = useState<any>([]);
     const authContext = useContext(AuthContext);
 
@@ -76,4 +76,4 @@ const pages = () => {
   )
 }
 
-export default pages
+export default NewRoomsPage

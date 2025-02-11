@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { AuthContext } from '@/app/context';
 import { FaEllipsisV } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface Message {
   id: number;
@@ -118,12 +119,19 @@ const ChatRoom = () => {
     if (fileType === 'image') {
       return (
         <div className="w-24 h-24 relative">
-          <img src={filePreview} alt="File Preview" className="w-full h-full object-cover rounded-md border border-gray-300 shadow-md" />
+          <Image
+            src={filePreview}
+            alt="File Preview"
+            width={96}
+            height={96}
+            className="w-full h-full object-cover rounded-md border border-gray-300 shadow-md"
+          />
         </div>
       );
     }
     return null;
-  };
+};
+
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
