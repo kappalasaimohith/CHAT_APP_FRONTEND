@@ -1,168 +1,122 @@
 'use client';
 
-import axios from "axios";
-import { useEffect, useState, useContext, FormEvent } from "react";
-import { AuthContext } from "../context";
-import styles from './dashboard.module.css';
-import { Button, Divider } from "antd";
-import { FaPlus } from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import axios from 'axios';
+import { useEffect, useState, useContext, FormEvent } from 'react';
+import { AuthContext } from '../context';
+import { FaPlus } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const router = useRouter();
-  const [rooms, setrooms] = useState<any[]>([]);
-  const [rooms2, setrooms2] = useState<any[]>([]);
-  const [roomName, setRoomName] = useState<string>('');
-  const [selectedRoomId, setSelectedRoomId] = useState(1);
+  const [rooms, setRooms] = useState<any[]>([]);
+  const [roomName, setRoomName] = useState('');
+  const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
+
   const authContext = useContext(AuthContext);
-
-  if (!authContext) {
-    throw new Error('AuthContext must be used within an AuthTokenProvider');
-  }
-
+  if (!authContext) throw new Error('AuthContext must be used within an AuthTokenProvider');
   const { authToken, login } = authContext;
 
   useEffect(() => {
     const token = sessionStorage.getItem('authToken');
-    if (token) {
-      login(token);
-    }
+    if (token) login(token);
   }, [login]);
 
   useEffect(() => {
     if (authToken) {
-      axios.get('http://localhost:8000/chatroom/get_all_rooms/', {
-        headers: {
-          'Authorization': `Bearer ${authToken}`
-        }
-      })
-        .then(response => {
-          console.log(response.data, " is the response daata of new rooms")
-          setrooms(response.data['rooms']);
-          setrooms2(response.data['rooms2'])
+      axios
+        .get('http://localhost:8000/chatroom/get_all_rooms/', {
+          headers: { Authorization: `Bearer ${authToken}` },
         })
-        .catch(error => {
-          console.log(error);
-        });
+        .then((res) => {
+          setRooms(res.data.rooms || []);
+        })
+        .catch(console.error);
     }
-    else {
-      console.log("token is not there, token is empty");
-    }
-  }, [authToken])
-
+  }, [authToken]);
 
   const addRoom = (e: FormEvent) => {
     e.preventDefault();
-    console.log(roomName, " is the room name")
-    axios.post('http://localhost:8000/chatroom/rooms/', {
-      'room': roomName,
-    }, {
-      headers: {
-        "Authorization": `Bearer ${authToken}`
-      }
-    })
-      .then(response => {
-        console.log(response.data);
-        setRoomName(''); // Clear the input field after successful room addition
-        setrooms(prevrooms => [...prevrooms, response.data]); // Update the list with the new room
-      })
-      .catch(error => {
-        console.error(error);
-        alert("room already creatd")
-      });
-  }
+    if (!roomName.trim()) return;
 
-  const handleKeyDown = (e:any) => {
-    if (e.key === 'Enter') {
-      addRoom(e);
-    }
+    axios
+      .post(
+        'http://localhost:8000/chatroom/rooms/',
+        { room: roomName },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      )
+      .then((res) => {
+        setRooms((prev) => [...prev, res.data]);
+        setRoomName('');
+        setIsCreatingRoom(false);
+      })
+      .catch(() => alert('Room already created'));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') addRoom(e as any);
   };
 
   return (
-    <div className={styles.container}>
+    <main className="flex-1 p-8 bg-gray-50 min-h-screen overflow-auto">
+      <section className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md flex flex-col">
+        <h1 className="text-3xl font-extrabold text-violet-700 mb-8">Your Rooms</h1>
 
-      {/* <Button><a href="dashboard/YourGroups">Check your groups</a></Button>
-      <hr />
-      <hr />
-      <Button><a href="dashboard/MyRequest">See My Requests</a></Button>
-      <hr />
-      <hr />
-      <Button><a href="dashboard/NewRooms">Join New rooms</a></Button>
-      <hr />
-      <hr />
-      <Button><a href="dashboard/OthersRequests">Other Requests to your group</a></Button>
-      <hr />
-      <hr />
-      <Button><a href="dashboard/AllRooms">Check your all rooms</a></Button> */}
-      {/* <div className="w-full min-h-screen mt-0 bg-white p-4 shadow-md flex flex-col overflow-y-auto" >
-        <h2 className="text-lg font-bold text-[#004d40] mb-6">Rooms</h2>
-        <ul className="space-y-2">
-          {rooms?.map((room) => (
+        <ul className="space-y-4 mb-8">
+          {rooms.map((room) => (
             <li
               key={room.id}
-              className={`p-2 cursor-pointer rounded-full transition-all duration-300 ${room.id === selectedRoomId ? 'bg-[#004d40] text-white shadow-lg' : 'bg-[#f1f8e9] text-[#004d40] hover:bg-[#c8e6c9]'
-                }`}
               onClick={() => {
-                console.log(room, " is the room id of the app")
-                router.push(`/dashboard/chat/${room.id}`)
+                setSelectedRoomId(room.id);
+                router.push(`/dashboard/chat/${room.id}`);
               }}
+              className={`cursor-pointer rounded-md p-4 transition-colors ${
+                selectedRoomId === room.id
+                  ? 'bg-violet-600 text-white shadow-lg'
+                  : 'bg-violet-100 text-violet-800 hover:bg-violet-300'
+              }`}
             >
               {room.room}
             </li>
           ))}
         </ul>
-        <ul className="space-y-2">
-          {rooms2?.map((room) => (
-            <li
-              key={room.id}
-              className={`p-2 cursor-pointer rounded-full transition-all duration-300 ${room.id === selectedRoomId ? 'bg-[#004d40] text-white shadow-lg' : 'bg-[#f1f8e9] text-[#004d40] hover:bg-[#c8e6c9]'
-                }`}
-              onClick={() => {
-                console.log(room, " is the room id of the app")
-                router.push(`/dashboard/chat/${room.room}`)
-              }}
-            >
-              {room.room}
-            </li>
-          ))}
-        </ul>
+
         {isCreatingRoom ? (
-          <div className="mt-0">
+          <form onSubmit={addRoom} className="flex flex-col space-y-4 max-w-md">
             <input
               type="text"
               placeholder="Enter room name..."
-              className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:ring-[#004d40] shadow-sm"
               value={roomName}
               onChange={(e) => setRoomName(e.target.value)}
               onKeyDown={handleKeyDown}
+              className="border border-violet-300 rounded-md p-3 focus:outline-none focus:ring-4 focus:ring-violet-600"
+              autoFocus
             />
-            <div className="flex justify-between mt-0">
+            <div className="flex space-x-4">
               <button
-                className="bg-[#00796b] text-white px-4 py-2 rounded-lg hover:bg-[#004d40] transition-colors duration-300"
-                onClick={(e)=>{addRoom(e)}}
+                type="submit"
+                className="bg-violet-600 text-white px-6 py-3 rounded-md hover:bg-violet-700 transition"
               >
                 Create
               </button>
               <button
-                className="bg-[#e57373] text-white px-4 py-2 rounded-lg hover:bg-[#c62828] transition-colors duration-300"
+                type="button"
+                className="bg-red-500 text-white px-6 py-3 rounded-md hover:bg-red-600 transition"
                 onClick={() => setIsCreatingRoom(false)}
               >
                 Cancel
               </button>
             </div>
-          </div>
+          </form>
         ) : (
           <button
-            className="bg-[#004d40] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#00796b] transition-colors duration-300 mt-auto flex items-center justify-center"
             onClick={() => setIsCreatingRoom(true)}
+            className="flex items-center justify-center bg-violet-600 text-white px-8 py-3 rounded-md hover:bg-violet-700 transition w-max"
           >
-            <FaPlus className="text-xl mr-2" />
-            Create Room
+            <FaPlus className="mr-3" /> Create Room
           </button>
         )}
-      </div> */}
-
-    </div>
+      </section>
+    </main>
   );
 }
